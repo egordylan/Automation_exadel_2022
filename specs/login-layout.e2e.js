@@ -1,56 +1,48 @@
-async function login(login, password) {
-    await browser.url('https://viktor-silakov.github.io/course-sut?quick');
-    await $('#login').setValue(login);
-    await $('#password').setValue(password);
-    await $('button').click();
-}
-
-
-async function loggedIn() {
-    await $('//*[@id="user-label"]').waitForDisplayed({timeout: 3000});
-}
-
-
 describe('Login', function () {
-    const testData = [
-        { login: 'walker@jw.com', 
-          password: 'password', 
-          msg: 'Successfully logged in',},
-    ]
+    const userLogin = 'walker@jw.com';
+    const userPassword = 'password';
 
-    for (const user of testData) {
-        it(`should logged in: '${user.login}', '${user.password}'`, 
-            async function () {
-                const userLogin = 'walker@jw.com';
-                const userPassword = 'password';
-                await login(user.login, user.password);
-                expect(await expect(userLogin).toMatch(user.login));
-                expect(await expect(userPassword).toMatch(user.password));
-            });
-    }
+     it(`should logged in: '${userLogin}', '${userPassword}'`, 
+        async function () {
+            await browser.url('https://viktor-silakov.github.io/course-sut');
+            await $('#login').setValue('walker@jw.com');
+            await $('#password').setValue('password');
+            await $('button').click();
+    });
+    
 
     it(`spinner should appear and then disappear`, 
             async function () {
                 // wait for an element to be displayed or not displayed
-                /*await $('#spinner').waitForDisplayed({ reverse: false, timeout: 5000 });
-                await $('#spinner').waitForDisplayed({ reverse: true, timeout: 5000 });
-                expect(await $('#spinner').waitForDisplayed({ reverse: true, timeout: 5000 }));*/
+                await $('#spinner').waitForDisplayed({ reverse: false, timeout: 5000 });
+                await $('#spinner').waitForDisplayed({ reverse: true, timeout: 8000 });
 
                 // searching the element in DOM
-                await $('(//div[@style="display: flex;"][@id="spinner"])').waitForExist({timeout: 1000, reverse: false});
-                await $('(//div[@style="display: none;"][@id="spinner"])').waitForExist({timeout: 3000, reverse: false});
-                expect(await $('(//div[@style="display: none;"][@id="spinner"])')
-                                .waitForExist({timeout: 3000, reverse: false}));
+                // await $('(//div[@style="display: flex;"][@id="spinner"])').waitForExist({timeout: 1000, reverse: false});
+                // await $('(//div[@style="display: none;"][@id="spinner"])').waitForExist({timeout: 3000, reverse: false});
+
+                // I don't understand about this variant. Could it be or not?
+                // expect(await $('(//div[@style="display: none;"][@id="spinner"])')
+                //                .waitForExist({timeout: 3000, reverse: false}));
     });
 
-    for (const exactUser of testData) {
-        it(`exactly user logged in: '${exactUser.login}'`, 
+    it(`exactly user logged in: '${userLogin}'`, 
             async function () {
-                await loggedIn();
-                expect(await $('//*[@id="user-label"][@title="walker@jw.com"][text()[contains(.,"John Walker")]]')
-                                .waitForDisplayed({timeout: 3000, reverse: false}));
+                // with boolean expression
+               /* const userName = await $('//*[@id="user-label"][@title="walker@jw.com"][text()[contains(.,"John Walker")]]')
+                                        .waitForDisplayed({timeout: 3000});
+                const result = userName.toString();
+                expect(await expect(result).toMatch('true'));*/
+
+                // with comparing text which contains in user label
+                const userTitle = await $('//*[@id="user-label"][@title="walker@jw.com"]');
+                const name = await userTitle.getText();
+                expect(await expect(name).toMatch('John Walker'));
+
+                //expect(await $('//*[@id="user-label"][@title="walker@jw.com"][text()[contains(.,"John Walker")]]')
+                //                .waitForDisplayed({timeout: 3000, reverse: false}));
     });
-    }
+    
     
     it(`should throw an error if background-color is red`, 
         async function() {
