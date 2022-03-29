@@ -22,5 +22,3 @@ describe('Executing JS in a brovser context', function () {
         
     });
 });
-
-//  npx wdio wdio.conf.js --spec click-hide-button.e2e.js
